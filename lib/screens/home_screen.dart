@@ -1,5 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_movie/widgets/movies_section.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -50,7 +51,10 @@ class _HomeScreenState extends State<HomeScreen>
         actions: const [
           Padding(
             padding: EdgeInsets.only(right: 15),
-            child: Icon(Icons.search),
+            child: Icon(
+              Icons.search,
+              color: Colors.white,
+            ),
           )
         ],
       ),
@@ -122,7 +126,7 @@ class _HomeScreenState extends State<HomeScreen>
           const SizedBox(height: 20),
           Center(
             child: [
-              Container(),
+              MoviesSection(),
               Container(),
               Container(),
               Container(),
