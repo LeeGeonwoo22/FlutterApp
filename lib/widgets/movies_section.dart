@@ -2,6 +2,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_movie/screens/movie_screen.dart';
 
+// ignore: must_be_immutable
 class MoviesSection extends StatelessWidget {
   List images = [
     'Thor Love And Thunder',
