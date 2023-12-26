@@ -1,3 +1,4 @@
+// ignore: empty_constructor_bodies
 class MoviesModel {
   final bool adult, video;
   final String backdropPath,
@@ -7,23 +8,26 @@ class MoviesModel {
       posterPath,
       releaseDate,
       title;
-  final int id, popularity, voteAverage, voteCount;
+  final int id, voteCount;
+  final double popularity, voteAverage;
   final List<int> genreIds;
 
-  MoviesModel({
-    required this.adult,
-    required this.video,
-    required this.backdropPath,
-    required this.originalLanguage,
-    required this.originalTitle,
-    required this.overview,
-    required this.posterPath,
-    required this.releaseDate,
-    required this.title,
-    required this.id,
-    required this.popularity,
-    required this.voteAverage,
-    required this.voteCount,
-    required this.genreIds,
-  });
+  // 클래스 필드 초기화
+  MoviesModel.fromJson(Map<String, dynamic> json)
+      : adult = json['adult'],
+        video = json['video'],
+        backdropPath = json['backdrop_path'],
+        originalLanguage = json['original_language'],
+        overview = json['overview'],
+        posterPath = json['poster_path'],
+        title = json['title'],
+        id = json['id'],
+        popularity = json['popularity'],
+        voteAverage = json['vote_average'],
+        voteCount = json['vote_count'],
+        originalTitle = json['original_title'],
+        releaseDate = json['release_date'],
+        genreIds = List<int>.from(json['genre_ids']);
+
+  // MoviesModel.fromJson(Map<String,dynamic> json, this.adult, this.video, this.backdropPath, this.originalLanguage, this.originalTitle, this.overview, this.posterPath, this.releaseDate, this.title, this.id, this.popularity, this.voteAverage, this.voteCount, this.genreIds)
 }
