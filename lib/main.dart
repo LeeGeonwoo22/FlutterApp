@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_movie/screens/splash.screen.dart';
-import 'package:flutter_movie/services/api_service.dart';
 
 void main() {
-  ApiService().getMovies();
   runApp(const MyApp());
 }
 

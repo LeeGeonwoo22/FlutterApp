@@ -4,10 +4,10 @@ import 'package:flutter_movie/models/movies_model.dart';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  final String baseUrl = "https://movies-api.nomadcoders.workers.dev";
-  final String popular = "popular";
+  static const String baseUrl = "https://movies-api.nomadcoders.workers.dev";
+  static const String popular = "popular";
 
-  Future<List<MoviesModel>> getMovies() async {
+  static Future<List<MoviesModel>> getMovies() async {
     try {
       List<MoviesModel> movieInstances = [];
       final url = Uri.parse("$baseUrl/$popular");
@@ -23,12 +23,11 @@ class ApiService {
         }
         return movieInstances;
       } else {
-        print("Failed to load data. Status code: ${response.statusCode}");
+        // print("Failed to load data. Status code: ${response.statusCode}");
         throw Exception("Failed to load data");
-        // print("Response body: ${response.body}");
       }
     } catch (error) {
-      print("Error during API call: $error");
+      // print("Error during API call: $error");
       throw Exception("Error during API call");
     }
   }

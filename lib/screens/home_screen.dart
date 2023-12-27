@@ -1,9 +1,19 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_movie/models/movies_model.dart';
+import 'package:flutter_movie/services/api_service.dart';
 import 'package:flutter_movie/widgets/movies_section.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+  // List<MoviesModel> Movie = [];
+  // bool isLoading = true;
+
+  // void waitForMovies() async {
+  //   Movie = await ApiService.getMovies();
+  //   isLoading = true;
+  //   setState() {}
+  // }
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -12,11 +22,13 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  late Future<List<MoviesModel>> movies;
 
   @override
   void initState() {
     _tabController = TabController(length: 4, vsync: this, initialIndex: 0);
     _tabController.addListener(_handleTabSection);
+    movies = ApiService.getMovies();
     super.initState();
   }
 
@@ -29,111 +41,75 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: const Drawer(),
-      appBar: AppBar(
-        title: const Text(
-          "Movies Streaming",
-          style: TextStyle(color: Colors.white),
-        ),
-        leading: Builder(
-          builder: (BuildContext context) {
-            return IconButton(
-              icon: const Icon(
-                Icons.menu,
+        drawer: const Drawer(),
+        appBar: AppBar(
+          title: const Text(
+            "Movies Streaming",
+            style: TextStyle(color: Colors.white),
+          ),
+          leading: Builder(
+            builder: (BuildContext context) {
+              return IconButton(
+                icon: const Icon(
+                  Icons.menu,
+                  color: Colors.white,
+                ),
+                onPressed: () {
+                  Scaffold.of(context).openDrawer();
+                },
+              );
+            },
+          ),
+          actions: const [
+            Padding(
+              padding: EdgeInsets.only(right: 15),
+              child: Icon(
+                Icons.search,
                 color: Colors.white,
               ),
-              onPressed: () {
-                Scaffold.of(context).openDrawer();
-              },
-            );
-          },
+            )
+          ],
         ),
-        actions: const [
-          Padding(
-            padding: EdgeInsets.only(right: 15),
-            child: Icon(
-              Icons.search,
-              color: Colors.white,
-            ),
-          )
-        ],
-      ),
-      body: ListView(
-        children: [
-          CarouselSlider(
-            options: CarouselOptions(
-              autoPlay: true,
-              height: 230,
-              enlargeCenterPage: true,
-              aspectRatio: 16 / 9,
-              enableInfiniteScroll: true,
-              autoPlayAnimationDuration: const Duration(milliseconds: 800),
-              viewportFraction: 0.8,
-            ),
-            items: [
-              Container(
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    image: const DecorationImage(
-                      image: AssetImage("assets/images/upcoming1.jpg"),
-                      fit: BoxFit.cover,
-                    )),
-              ),
-              Container(
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    image: const DecorationImage(
-                      image: AssetImage("assets/images/upcoming2.jpg"),
-                      fit: BoxFit.cover,
-                    )),
-              ),
-              Container(
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    image: const DecorationImage(
-                      image: AssetImage("assets/images/upcoming3.jpg"),
-                      fit: BoxFit.cover,
-                    )),
-              ),
-              Container(
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    image: const DecorationImage(
-                      image: AssetImage("assets/images/upcoming4.jpg"),
-                      fit: BoxFit.cover,
-                    )),
-              )
-            ],
-          ),
-          const SizedBox(height: 30),
-          TabBar(
-            controller: _tabController,
-            unselectedLabelColor: Colors.white,
-            isScrollable: true,
-            indicator: BoxDecoration(
-                color: Colors.red, borderRadius: BorderRadius.circular(10)),
-            labelStyle:
-                const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-            labelPadding: const EdgeInsets.symmetric(horizontal: 20),
-            padding: const EdgeInsets.only(left: 10),
-            tabs: const [
-              Tab(text: 'All'),
-              Tab(text: 'Action'),
-              Tab(text: 'Adventure'),
-              Tab(text: 'Comedy'),
-            ],
-          ),
-          const SizedBox(height: 20),
-          Center(
-            child: [
-              MoviesSection(),
-              Container(),
-              Container(),
-              Container(),
-            ][_tabController.index],
-          )
-        ],
-      ),
-    );
+        //... (이전 코드와 동일)
+        body: FutureBuilder(
+          future: movies,
+          builder: (context, AsyncSnapshot<List<MoviesModel>> snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              print("Error: ${snapshot.error}");
+              return Center(
+                child: Text(
+                  'Error loading data: ${snapshot.error}',
+                  style: const TextStyle(color: Colors.white),
+                ),
+              );
+            } else if (snapshot.hasData) {
+              final List<MoviesModel> movieList = snapshot.data!;
+              print("Movie list length: ${movieList.length}");
+              // 여기서 movieList를 사용하여 화면을 구성하도록 수정
+              return ListView.builder(
+                itemCount: movieList.length,
+                itemBuilder: (context, index) {
+                  final MoviesModel movie = movieList[index];
+                  // movie를 사용하여 각 항목을 렌더링하는 로직을 작성
+                  return ListTile(
+                    title: Text(
+                      movie.title,
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                    // 여기에 필요한 다른 위젯들을 추가
+                  );
+                },
+              );
+            } else {
+              print("No data available");
+              return const Text(
+                'Loading....',
+                style: TextStyle(color: Colors.white),
+              );
+            }
+          },
+        ));
   }
 }
