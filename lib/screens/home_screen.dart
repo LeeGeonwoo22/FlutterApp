@@ -94,9 +94,16 @@ class _HomeScreenState extends State<HomeScreen>
               );
             } else {
               print("No data available");
-              return const Text(
-                'Loading...',
-                style: TextStyle(color: Colors.white),
+              return const Column(
+                children: [
+                  Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                  Text(
+                    'Loading...',
+                    style: TextStyle(color: Colors.white),
+                  )
+                ],
               );
             }
           },
