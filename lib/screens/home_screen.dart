@@ -74,17 +74,7 @@ class _HomeScreenState extends State<HomeScreen>
         body: FutureBuilder(
           future: movies,
           builder: (context, AsyncSnapshot<List<MoviesModel>> snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasError) {
-              print("Error: ${snapshot.error}");
-              return Center(
-                child: Text(
-                  'Error loading data: ${snapshot.error}',
-                  style: const TextStyle(color: Colors.white),
-                ),
-              );
-            } else if (snapshot.hasData) {
+            if (snapshot.hasData) {
               final List<MoviesModel> movieList = snapshot.data!;
               print("Movie list length: ${movieList.length}");
               // 여기서 movieList를 사용하여 화면을 구성하도록 수정
@@ -105,7 +95,7 @@ class _HomeScreenState extends State<HomeScreen>
             } else {
               print("No data available");
               return const Text(
-                'Loading....',
+                'Loading...',
                 style: TextStyle(color: Colors.white),
               );
             }
