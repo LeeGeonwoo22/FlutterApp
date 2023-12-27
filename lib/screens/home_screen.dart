@@ -78,19 +78,18 @@ class _HomeScreenState extends State<HomeScreen>
               final List<MoviesModel> movieList = snapshot.data!;
               print("Movie list length: ${movieList.length}");
               // 여기서 movieList를 사용하여 화면을 구성하도록 수정
-              return ListView.builder(
+              return ListView.separated(
+                scrollDirection: Axis.vertical,
                 itemCount: movieList.length,
                 itemBuilder: (context, index) {
                   final MoviesModel movie = movieList[index];
                   // movie를 사용하여 각 항목을 렌더링하는 로직을 작성
-                  return ListTile(
-                    title: Text(
-                      movie.title,
-                      style: const TextStyle(color: Colors.white),
-                    ),
-                    // 여기에 필요한 다른 위젯들을 추가
+                  return Text(
+                    movie.title,
+                    style: const TextStyle(color: Colors.white),
                   );
                 },
+                separatorBuilder: (context, index) => const SizedBox(width: 20),
               );
             } else {
               print("No data available");
