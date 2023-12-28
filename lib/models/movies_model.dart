@@ -16,10 +16,11 @@ class MoviesModel {
   MoviesModel.fromJson(Map<String, dynamic> json)
       : adult = json['adult'],
         video = json['video'],
-        backdropPath = json['backdrop_path'],
+        backdropPath =
+            'https://image.tmdb.org/t/p/w500/${json['backdrop_path']}',
         originalLanguage = json['original_language'],
         overview = json['overview'],
-        posterPath = json['poster_path'],
+        posterPath = 'https://image.tmdb.org/t/p/w500/${json['poster_path']}',
         title = json['title'],
         id = json['id'],
         popularity = json['popularity'],
@@ -28,6 +29,4 @@ class MoviesModel {
         originalTitle = json['original_title'],
         releaseDate = json['release_date'],
         genreIds = List<int>.from(json['genre_ids']);
-
-  // MoviesModel.fromJson(Map<String,dynamic> json, this.adult, this.video, this.backdropPath, this.originalLanguage, this.originalTitle, this.overview, this.posterPath, this.releaseDate, this.title, this.id, this.popularity, this.voteAverage, this.voteCount, this.genreIds)
 }

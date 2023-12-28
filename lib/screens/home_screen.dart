@@ -74,22 +74,27 @@ class _HomeScreenState extends State<HomeScreen>
         body: FutureBuilder(
           future: movies,
           builder: (context, AsyncSnapshot<List<MoviesModel>> snapshot) {
-            if (snapshot.hasData) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              print("Error: ${snapshot.error}");
+              return Center(
+                child: Text(
+                  'Error loading data: ${snapshot.error}',
+                  style: const TextStyle(color: Colors.white),
+                ),
+              );
+            } else if (snapshot.hasData) {
               final List<MoviesModel> movieList = snapshot.data!;
               print("Movie list length: ${movieList.length}");
               // 여기서 movieList를 사용하여 화면을 구성하도록 수정
-              return ListView.separated(
-                scrollDirection: Axis.vertical,
-                itemCount: movieList.length,
-                itemBuilder: (context, index) {
-                  final MoviesModel movie = movieList[index];
-                  // movie를 사용하여 각 항목을 렌더링하는 로직을 작성
-                  return Text(
-                    movie.title,
-                    style: const TextStyle(color: Colors.white),
-                  );
-                },
-                separatorBuilder: (context, index) => const SizedBox(width: 20),
+              return Column(
+                children: [
+                  const SizedBox(
+                    height: 50,
+                  ),
+                  makeList(movieList)
+                ],
               );
             } else {
               print("No data available");
@@ -108,4 +113,52 @@ class _HomeScreenState extends State<HomeScreen>
           },
         ));
   }
+
+  CarouselSlider makeList(List<MoviesModel> movieList) =>
+      CarouselSlider.builder(
+        options: CarouselOptions(
+          autoPlay: true,
+          enlargeCenterPage: true,
+          aspectRatio: 16 / 9,
+          enableInfiniteScroll: true,
+          autoPlayAnimationDuration: const Duration(milliseconds: 800),
+          viewportFraction: 0.8,
+        ),
+        itemCount: movieList.length,
+        itemBuilder: (context, index, realIndex) {
+          final MoviesModel movie = movieList[index];
+          return Container(
+            width: 250,
+            clipBehavior: Clip.hardEdge,
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15),
+                boxShadow: [
+                  BoxShadow(
+                    blurRadius: 15,
+                    offset: const Offset(10, 10),
+                    color: Colors.black.withOpacity(0.3),
+                  ),
+                ]),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Flexible(
+                  child: Image.network(
+                    movie.posterPath,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                Text(
+                  movie.title,
+                  style: const TextStyle(color: Colors.white, fontSize: 22),
+                  softWrap: true,
+                ),
+              ],
+            ),
+          );
+        },
+      );
 }
