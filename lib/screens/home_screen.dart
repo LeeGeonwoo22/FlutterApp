@@ -78,18 +78,13 @@ class _HomeScreenState extends State<HomeScreen>
               final List<MoviesModel> movieList = snapshot.data!;
               print("Movie list length: ${movieList.length}");
               // 여기서 movieList를 사용하여 화면을 구성하도록 수정
-              return ListView.separated(
-                scrollDirection: Axis.vertical,
-                itemCount: movieList.length,
-                itemBuilder: (context, index) {
-                  final MoviesModel movie = movieList[index];
-                  // movie를 사용하여 각 항목을 렌더링하는 로직을 작성
-                  return Text(
-                    movie.title,
-                    style: const TextStyle(color: Colors.white),
-                  );
-                },
-                separatorBuilder: (context, index) => const SizedBox(width: 20),
+              return Column(
+                children: [
+                  const SizedBox(
+                    height: 50,
+                  ),
+                  Expanded(child: makeList(movieList))
+                ],
               );
             } else {
               print("No data available");
@@ -107,5 +102,43 @@ class _HomeScreenState extends State<HomeScreen>
             }
           },
         ));
+  }
+
+  ListView makeList(List<MoviesModel> movieList) {
+    return ListView.separated(
+      scrollDirection: Axis.horizontal,
+      itemCount: movieList.length,
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+      itemBuilder: (context, index) {
+        final MoviesModel movie = movieList[index];
+        // movie를 사용하여 각 항목을 렌더링하는 로직을 작성
+        return Column(
+          children: [
+            Container(
+              width: 250,
+              clipBehavior: Clip.hardEdge,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(15),
+                  boxShadow: [
+                    BoxShadow(
+                      blurRadius: 15,
+                      offset: const Offset(10, 10),
+                      color: Colors.black.withOpacity(0.3),
+                    )
+                  ]),
+              child: Image.network(movie.posterPath),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            Text(
+              movie.title,
+              style: const TextStyle(color: Colors.white, fontSize: 22),
+            )
+          ],
+        );
+      },
+      separatorBuilder: (context, index) => const SizedBox(width: 40),
+    );
   }
 }
