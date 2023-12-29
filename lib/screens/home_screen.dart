@@ -6,14 +6,6 @@ import 'package:flutter_movie/widgets/movies_section.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
-  // List<MoviesModel> Movie = [];
-  // bool isLoading = true;
-
-  // void waitForMovies() async {
-  //   Movie = await ApiService.getMovies();
-  //   isLoading = true;
-  //   setState() {}
-  // }
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -41,124 +33,115 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        drawer: const Drawer(),
-        appBar: AppBar(
-          title: const Text(
-            "Movies Streaming",
-            style: TextStyle(color: Colors.white),
-          ),
-          leading: Builder(
-            builder: (BuildContext context) {
-              return IconButton(
-                icon: const Icon(
-                  Icons.menu,
-                  color: Colors.white,
-                ),
-                onPressed: () {
-                  Scaffold.of(context).openDrawer();
-                },
-              );
-            },
-          ),
-          actions: const [
-            Padding(
-              padding: EdgeInsets.only(right: 15),
-              child: Icon(
-                Icons.search,
+      drawer: const Drawer(),
+      appBar: AppBar(
+        title: const Text(
+          "Movies Streaming",
+          style: TextStyle(color: Colors.white),
+        ),
+        leading: Builder(
+          builder: (BuildContext context) {
+            return IconButton(
+              icon: const Icon(
+                Icons.menu,
                 color: Colors.white,
               ),
-            )
-          ],
-        ),
-        //... (이전 코드와 동일)
-        body: FutureBuilder(
-          future: movies,
-          builder: (context, AsyncSnapshot<List<MoviesModel>> snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasError) {
-              print("Error: ${snapshot.error}");
-              return Center(
-                child: Text(
-                  'Error loading data: ${snapshot.error}',
-                  style: const TextStyle(color: Colors.white),
-                ),
-              );
-            } else if (snapshot.hasData) {
-              final List<MoviesModel> movieList = snapshot.data!;
-              print("Movie list length: ${movieList.length}");
-              // 여기서 movieList를 사용하여 화면을 구성하도록 수정
-              return Column(
-                children: [
-                  const SizedBox(
-                    height: 50,
-                  ),
-                  makeList(movieList)
-                ],
-              );
-            } else {
-              print("No data available");
-              return const Column(
-                children: [
-                  Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                  Text(
-                    'Loading...',
-                    style: TextStyle(color: Colors.white),
-                  )
-                ],
-              );
-            }
+              onPressed: () {
+                Scaffold.of(context).openDrawer();
+              },
+            );
           },
-        ));
-  }
-
-  CarouselSlider makeList(List<MoviesModel> movieList) =>
-      CarouselSlider.builder(
-        options: CarouselOptions(
-          autoPlay: true,
-          enlargeCenterPage: true,
-          aspectRatio: 16 / 9,
-          enableInfiniteScroll: true,
-          autoPlayAnimationDuration: const Duration(milliseconds: 800),
-          viewportFraction: 0.8,
         ),
-        itemCount: movieList.length,
-        itemBuilder: (context, index, realIndex) {
-          final MoviesModel movie = movieList[index];
-          return Container(
-            width: 250,
-            clipBehavior: Clip.hardEdge,
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(15),
-                boxShadow: [
-                  BoxShadow(
-                    blurRadius: 15,
-                    offset: const Offset(10, 10),
-                    color: Colors.black.withOpacity(0.3),
-                  ),
-                ]),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
+        actions: const [
+          Padding(
+            padding: EdgeInsets.only(right: 15),
+            child: Icon(
+              Icons.search,
+              color: Colors.white,
+            ),
+          )
+        ],
+      ),
+      body: FutureBuilder(
+        future: movies,
+        builder: (context, AsyncSnapshot<List<MoviesModel>> snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            print("Error: ${snapshot.error}");
+            return Center(
+              child: Text(
+                'Error loading data: ${snapshot.error}',
+                style: const TextStyle(color: Colors.white),
+              ),
+            );
+          } else if (snapshot.hasData) {
+            final List<MoviesModel> movieList = snapshot.data!;
+            return ListView(
               children: [
-                Flexible(
-                  child: Image.network(
-                    movie.posterPath,
-                    fit: BoxFit.cover,
+                CarouselSlider(
+                  options: CarouselOptions(
+                    autoPlay: true,
+                    height: 200,
+                    enlargeCenterPage: true,
+                    aspectRatio: 16 / 9,
+                    enableInfiniteScroll: true,
+                    autoPlayAnimationDuration:
+                        const Duration(milliseconds: 800),
+                    viewportFraction: 0.8,
                   ),
+                  items: movieList.asMap().entries.map((entry) {
+                    // final int index = entry.key;
+                    final MoviesModel movie = entry.value;
+                    return Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        image: DecorationImage(
+                          image: NetworkImage(movie.posterPath),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    );
+                  }).toList(),
                 ),
-                const SizedBox(
-                  height: 10,
+                const SizedBox(height: 30),
+                TabBar(
+                  controller: _tabController,
+                  unselectedLabelColor: Colors.white,
+                  isScrollable: true,
+                  indicator: BoxDecoration(
+                      color: Colors.red,
+                      borderRadius: BorderRadius.circular(10)),
+                  labelStyle: const TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.w500),
+                  labelPadding: const EdgeInsets.symmetric(horizontal: 20),
+                  padding: const EdgeInsets.only(left: 10),
+                  tabs: const [
+                    Tab(text: 'All'),
+                    Tab(text: 'Action'),
+                    Tab(text: 'Adventure'),
+                    Tab(text: 'Comedy'),
+                  ],
                 ),
-                Text(
-                  movie.title,
-                  style: const TextStyle(color: Colors.white, fontSize: 22),
-                  softWrap: true,
+                const SizedBox(height: 20),
+                Center(
+                  child: [
+                    Container(),
+                    MoviesSection(),
+                    Container(),
+                    Container(),
+                    Container(),
+                  ][_tabController.index],
                 ),
               ],
-            ),
-          );
+            );
+          } else {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
         },
-      );
+      ),
+    );
+  }
 }
